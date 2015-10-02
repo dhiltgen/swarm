@@ -2,6 +2,7 @@ package cli
 
 import (
 	"regexp"
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -42,7 +43,18 @@ func join(c *cli.Context) {
 	if ttl <= hb {
 		log.Fatal("--ttl must be strictly superior to the heartbeat value")
 	}
-	d, err := discovery.New(dflag, hb, ttl)
+
+	// Process the store options
+	options := map[string]string{}
+	for _, option := range c.StringSlice("cluster-store-opt") {
+		if !strings.Contains(option, "=") {
+			log.Fatal("--cluster-store-opt must container key=value strings")
+		}
+		kvpair := strings.SplitN(option, "=", 2)
+		options[kvpair[0]] = kvpair[1]
+	}
+
+	d, err := discovery.New(dflag, hb, ttl, options)
 	if err != nil {
 		log.Fatal(err)
 	}

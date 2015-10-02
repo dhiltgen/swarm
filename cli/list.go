@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/codegangsta/cli"
@@ -19,7 +20,17 @@ func list(c *cli.Context) {
 		log.Fatalf("invalid --timeout: %v", err)
 	}
 
-	d, err := discovery.New(dflag, timeout, 0)
+	// Process the store options
+	options := map[string]string{}
+	for _, option := range c.StringSlice("cluster-store-opt") {
+		if !strings.Contains(option, "=") {
+			log.Fatal("--cluster-store-opt must container key=value strings")
+		}
+		kvpair := strings.SplitN(option, "=", 2)
+		options[kvpair[0]] = kvpair[1]
+	}
+
+	d, err := discovery.New(dflag, timeout, 0, options)
 	if err != nil {
 		log.Fatal(err)
 	}

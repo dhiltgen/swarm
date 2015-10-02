@@ -112,6 +112,11 @@ var (
 		Usage: "cluster driver options",
 		Value: &cli.StringSlice{},
 	}
+	flClusterStoreOpt = cli.StringSliceFlag{
+		Name:  "cluster-store-opt",
+		Usage: "cluster store options",
+		Value: &cli.StringSlice{},
+	}
 
 	flLeaderElection = cli.BoolFlag{
 		Name:  "replication",
